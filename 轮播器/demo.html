@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>轮播</title>
+</head>
+<style>
+.arrow {
+    text-decoration: none;
+    position: absolute;
+    font-size: 40px;
+    z-index: 2;
+    color: white;
+    width: 50px;
+    height: 40px;
+    background-color: #ccc;
+    text-align: center;
+    line-height: 30px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    display: none;
+}
+
+#wraper:hover .arrow {
+    display: block;
+}
+
+.arrow:hover {
+    background-color: #999;
+}
+
+#prev {
+    left: 10px;
+}
+
+#next {
+    right: 10px;
+}
+
+#wraper {
+    width: 900px;
+    height: 150px;
+    overflow: hidden;
+    position: relative;
+}
+
+#list {
+    width: 4500px;
+    height: 150px;
+    position: absolute;
+}
+
+#list img {
+    float: left;
+}
+
+#buttons {
+    position: absolute;
+    z-index: 2;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    padding: 2px;
+}
+
+span {
+    color: #ccc;
+    font-size: 20px;
+    padding: 2px;
+    cursor: pointer;
+}
+
+.on {
+    color: purple;
+}
+</style>
+
+<body>
+    <div id="wraper">
+        <div id="list" style="left:-900px;">
+            <img src="images/banner3.jpg" alt="banner3">
+            <img src="images/banner1.jpg" alt="banner1">
+            <img src="images/banner2.jpg" alt="banner2">
+            <img src="images/banner3.jpg" alt="banner3">
+            <img src="images/banner1.jpg" alt="banner1">
+        </div>
+        <div id="buttons">
+            <span index="1" class="on">●</span>
+            <span index="2">●</span>
+            <span index="3">●</span>
+        </div>
+        <a href="javascript:;" id="prev" class="arrow">&lt;</a>
+        <a href="javascript:;" id="next" class="arrow">&gt;</a>
+    </div>
+    <script>
+    var wraper = document.getElementById('wraper');
+    var prev = document.getElementById('prev');
+    var next = document.getElementById('next');
+    var list = document.getElementById('list');
+    var buttons = document.getElementById('buttons');
+    var buts = document.getElementById('buttons').getElementsByTagName('span');
+    var len = buts.length;
+    var index = 1;
+    var timer=null;
+    var animating=false;//判断是否正在执行，若是如不添加动画
+    // console.log(len)
+    prev.onclick = function() {
+        if(animating)return;
+        animation(-900);
+        index++;
+        if (index > 3) {
+            index = 1;
+        }
+        butsShow();
+    }
+    next.onclick = function() {
+        if(animating)return;
+        animation(900);
+        index--;
+        if (index == 0) {
+            index = 3;
+        }
+        butsShow();
+        // console.log(this)
+    }
+    //按钮颜色跟着变化
+    function butsShow() {
+        for (let i = 0; i < len; i++) {
+            if (buts[i].className == 'on') {
+                buts[i].className = '';
+            }
+            buts[index - 1].className = 'on';
+            //buts[index-1].setAttribute('class','on')
+        }
+    }
+    //执行动画
+    function animation(offset) {
+        animating = true;
+        var time = 300; //总位移时长
+        var inteval = 10; //每次移动的时间
+        var speed = offset / (time / inteval); //步长
+        var left = parseInt(list.style.left) + offset; //目标位置
+       
+        function action() {
+            if ((speed > 0 && left > parseInt(list.style.left)) || (speed < 0 && left < parseInt(list.style.left))) {
+                list.style.left = parseInt(list.style.left) + speed + 'px';
+                // console.log(list.style.left)
+
+                setTimeout(action, inteval);
+            } else {
+        animating = false;
+
+                list.style.left = left + 'px';
+                // new_left = parseInt(list.style.left);
+                // console.log(new_left)
+                if (left <=-3600) {
+                    list.style.left = -900 + 'px';
+                } else if (left >=0) {
+                    list.style.left = -2700 + 'px';
+                }
+            }
+        }
+        action();
+    }
+    //点击按钮改变图片
+    // for(let i=0;i<len;i++){
+    //    buts[i].onclick=function(){
+    //        // console.log(i)
+    //        index_off=i+1;
+    //        list.style.left=parseInt(list.style.left)+(index_off-index)*(-900)+'px';
+    //        index=index_off;
+    //        butsShow();
+    //    }
+    // }
+
+    //使用事件代理，点击按钮改变图片，代替上面的for循环监听每一个span
+    buttons.onclick = function(e) {
+        if(animating)return;
+
+        target = e.target || window.target;
+        if (e.target.nodeName == 'SPAN') {
+            let click_index = parseInt(e.target.getAttribute('index'));
+            animation((click_index - index) * (-900));
+            // list.style.left = parseInt(list.style.left) + (click_index - index) * (-900) + 'px';
+            index = click_index;
+            butsShow();
+        }
+    }
+    //自我循环播放,相当于每个2秒钟做一次点击事件
+    function autoPlay(){
+        timer=setTimeout(function(){
+             prev.onclick();
+             timer=setTimeout(arguments.callee,2000);
+        },2000)      
+    }
+    autoPlay();
+
+    wraper.onmouseover = function(){
+        clearTimeout(timer);
+    };
+    wraper.onmouseout = autoPlay;
+
+    </script>
+</body>
+
+</html>
