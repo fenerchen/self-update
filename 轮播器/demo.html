@@ -95,6 +95,9 @@ span {
         <a href="javascript:;" id="next" class="arrow">&gt;</a>
     </div>
     <script>
+/* 轮播器思想：把图片放在一个div中，排成一行或一列，父元素设置overflow：hidden，
+然后再根据左右点击箭头设置存图片的div的left。自动播放相当于有时间间隔的点击事件，使用定时器来启动点击事件。
+所有的移动，只是存放图片的div的left（左右移）在变动。*/
     var wraper = document.getElementById('wraper');
     var prev = document.getElementById('prev');
     var next = document.getElementById('next');
