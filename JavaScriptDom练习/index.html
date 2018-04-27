@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>充实文档的内容</title>
+</head>
+
+<body>
+    <abbr title="Word Wide Web Consortium">W3C</abbr>
+    <abbr title="People's Republic of China">PRC</abbr>
+    <script>
+    //把缩略的词语，用dl展示出来
+    function showAbbr() {
+    	//先检查浏览器对DOM方法的支持性
+    	if(!document.getElementsByTagName||!document.createElement||!document.createTextNode) return false;
+
+        var abbrs = document.getElementsByTagName('abbr'),
+            len = abbrs.length;
+        if (len < 1) return false;
+        var abbrArr = []; //存放abbr键值
+
+        //遍历abbr，存放到数组中
+        for (i = 0; i < len; i++) {
+            //元素节点的nodeName=null
+            var key = abbrs[i].lastChild.nodeValue; //key=abbrs[i].firstChild.nodeValue// key=abbrs[i].innerText;	
+            var definition = abbrs[i].getAttribute('title'); //var definition=abbrs[i].title;//
+            abbrArr[key] = definition;
+        }
+
+        //创建dl列表，添加到body中
+        var body = document.getElementsByTagName('body')[0]; //也可以bosy=document.body;
+        var dl = document.createElement('dl');
+        for (key in abbrArr) {
+            //定义标题
+            var dt = document.createElement('dt');
+            var dtTxt = document.createTextNode(key);
+            dt.appendChild(dtTxt); //dt.innerText=key;innerTxt的浏览器IE8+支持
+
+            //定义解释
+            var dd = document.createElement('dd');
+   			if( typeof dd.innerText=='string'){
+           		 dd.innerText = abbrArr[key];
+   			}else{
+   				var ddTxt = document.createTextNode(abbrArr[key]);
+          	   dd.appendChild(ddTxt); 
+   			}
+
+            //添加到dl
+            dl.appendChild(dt);
+            dl.appendChild(dd);
+        }
+        //把dl添加到body
+        body.appendChild(dl);
+    }
+
+    //添加load函数
+    function addLoadEvent(fn){
+    	var oldEvent=window.onload;
+    	if(typeof window.onload!='function'){
+    		window.onload=fn;
+    	}else{
+    		window.onload=function(){
+    			oldEvent();
+    			fn();
+    		}
+    	}
+    }
+   addLoadEvent(showAbbr);
+    </script>
+</body>
+
+</html>
